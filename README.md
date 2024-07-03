@@ -2,10 +2,13 @@
 
 ![Animated QR](res/qr.gif)
 
+Modified by YouGuess21.
+
+Great thanks to Firemoon777 for the original repository.
 ## Installation
 
 ```bash
-git clone https://github.com/Firemoon777/qrtetris.git
+git clone https://github.com/YouGuess21/qrtetris.git
 python3 -m pip install -r requirements
 ```
 

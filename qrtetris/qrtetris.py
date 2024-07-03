@@ -3,14 +3,14 @@ from logging import getLogger
 from typing import Optional, Tuple, List
 
 import numpy as np
-
 import qrcode
 from qrcode import QRCode
+from PIL import Image
+import imageio  # Missing import
 
 from qrtetris.gamefield import GameField
 
 logger = getLogger(__name__)
-
 
 class QRTetris:
 
@@ -57,7 +57,7 @@ class QRTetris:
 
     def cut(self):
         if self.qr is None:
-            logger.error(f"No QR code generated. Call build() first!")
+            logger.error("No QR code generated. Call build() first!")
             return
 
         self._find_markers()
@@ -86,14 +86,14 @@ class QRTetris:
 
     def print_ascii(self, **kwargs):
         if self.qr is None:
-            logger.error(f"No QR code generated. Call build() first!")
+            logger.error("No QR code generated. Call build() first!")
             return
 
         self.qr.print_ascii(**kwargs)
 
     def rotate(self, clockwise=True):
         if self.qr is None:
-            logger.error(f"No QR code generated. Call build() first!")
+            logger.error("No QR code generated. Call build() first!")
             return
 
         modules = deepcopy(self.qr.modules)
@@ -107,8 +107,8 @@ class QRTetris:
 
     def run(
             self,
-            interval = 0.5,
-            fast_interval = 0.1,
+            interval=0.5,
+            fast_interval=0.1,
             output: Optional[str] = None,
             show=True
     ):
@@ -124,6 +124,17 @@ class QRTetris:
             field.execute(instruction)
 
         if output:
-            field.save_gif()
+            self.save_gif(field)
 
         field.cleanup()
+
+    def save_gif(self, field: GameField):
+        try:
+            with imageio.get_writer(field.gif_output, mode='I', duration=field.gif_duration) as writer:
+                for filename in [field.gif_frame_mask.format(prefix=field.gif_tmp_dir.name, step=i) for i in range(field.gif_frame_number)]:
+                    with Image.open(filename) as img:
+                        if img.mode != 'P':
+                            img = img.convert('P')
+                        writer.append_data(np.array(img))
+        except Exception as e:
+            logger.error(f"Failed to save GIF: {e}")

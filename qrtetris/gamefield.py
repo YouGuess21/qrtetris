@@ -82,7 +82,7 @@ class GameField:
             self.gif_tmp_dir = tempfile.TemporaryDirectory()
         self.tty_enabled = tty_enabled
 
-        self.current_position = self.qr.modules_count / 2, 0
+        self.current_position = self.qr.modules_count // 2, 0
         self.current_figure = [[]]
 
         self.save()
